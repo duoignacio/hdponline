@@ -1,4 +1,4 @@
-const CACHE = 'hdp-v1';
+const CACHE = 'hdp-v2'; // ← bump this number on every deploy (v3, v4, etc.)
 const ASSETS = [
   '/index.html',
   '/manifest.json',
@@ -28,7 +28,23 @@ self.addEventListener('fetch', e => {
     e.respondWith(fetch(e.request).catch(() => new Response('', {status: 503})));
     return;
   }
-  // Todo lo demás: cache first
+
+  // HTML: network-first — siempre intenta buscar la versión más nueva
+  // Si no hay red, cae al caché como respaldo
+  if(e.request.mode === 'navigate' || e.request.url.endsWith('.html')) {
+    e.respondWith(
+      fetch(e.request)
+        .then(res => {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+          return res;
+        })
+        .catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
+  // Todo lo demás (JS, CSS, fuentes locales): cache-first
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request).then(res => {
       const clone = res.clone();
