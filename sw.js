@@ -1,5 +1,6 @@
 const CACHE = 'hdp-v2'; // ← bump this number on every deploy (v3, v4, etc.)
 const ASSETS = [
+  './',
   '/index.html',
   '/manifest.json',
   'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap'
