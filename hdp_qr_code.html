@@ -1,0 +1,45 @@
+
+<style>
+  body { margin: 0; }
+  #qr-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 2rem 1rem; }
+  #qr-canvas { border-radius: 12px; }
+  .qr-label { font-family: monospace; font-size: 13px; color: var(--color-text-secondary); }
+  .qr-title { font-size: 22px; font-weight: 500; color: var(--color-text-primary); letter-spacing: 2px; }
+  .qr-sub { font-size: 12px; color: var(--color-text-secondary); letter-spacing: 1px; text-transform: uppercase; }
+  .dl-btn { margin-top: 4px; padding: 10px 24px; border: 0.5px solid var(--color-border-secondary); border-radius: 8px; background: transparent; color: var(--color-text-primary); font-size: 13px; cursor: pointer; }
+  .dl-btn:hover { background: var(--color-background-secondary); }
+</style>
+<div id="qr-wrap">
+  <div class="qr-title">HDP</div>
+  <div class="qr-sub">Hasta Donde Puedas</div>
+  <canvas id="qr-canvas"></canvas>
+  <div class="qr-label">hdponline.netlify.app</div>
+  <button class="dl-btn" onclick="downloadQR()">Descargar QR</button>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const url = 'https://hdponline.netlify.app/';
+const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+const qrColor = isDark ? '#ffffff' : '#000000';
+const bgColor = isDark ? '#1a1a1a' : '#ffffff';
+
+new QRCode(document.getElementById('qr-canvas'), {
+  text: url,
+  width: 240,
+  height: 240,
+  colorDark: qrColor,
+  colorLight: bgColor,
+  correctLevel: QRCode.CorrectLevel.H
+});
+
+function downloadQR() {
+  setTimeout(() => {
+    const canvas = document.querySelector('#qr-canvas canvas');
+    if(!canvas) return;
+    const link = document.createElement('a');
+    link.download = 'hdp-qr.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }, 100);
+}
+</script>
