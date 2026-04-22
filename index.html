@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HDP — Humanos De Puta</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#e8d44d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HDP">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --surface2: #1e1e1e;
+    --border: #2a2a2a;
+    --accent: #e8d44d;
+    --accent2: #ff4444;
+    --text: #f0f0f0;
+    --muted: #888;
+    --white-card: #f5f0e8;
+    --black-card: #111;
+    --radius: 12px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.012) 40px, rgba(255,255,255,0.012) 41px),
+                repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.012) 40px, rgba(255,255,255,0.012) 41px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app { position: relative; z-index: 1; }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 10vw, 96px);
+    letter-spacing: 4px;
+    line-height: 1;
+    color: var(--accent);
+    text-shadow: 4px 4px 0 var(--accent2);
+  }
+  .logo span { color: var(--accent2); text-shadow: 4px 4px 0 var(--accent); }
+
+  .tagline {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* SCREENS */
+  .screen { display: none; min-height: 100vh; padding: 24px; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* HOME */
+  #home { align-items: center; justify-content: center; text-align: center; gap: 32px; }
+  #home .hero { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+
+  .action-group { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 320px; }
+
+  input[type="text"] {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    padding: 12px 16px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  input[type="text"]::placeholder { color: var(--muted); }
+
+  .btn {
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    color: #0a0a0a;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    width: 100%;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,212,77,0.3); }
+  .btn:active { transform: translateY(0); }
+  .btn.secondary { background: var(--surface2); color: var(--text); border: 1.5px solid var(--border); }
+  .btn.secondary:hover { border-color: var(--accent); box-shadow: none; }
+  .btn.danger { background: var(--accent2); }
+  .btn.danger:hover { box-shadow: 0 6px 20px rgba(255,68,68,0.3); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .divider { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 11px; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* LOBBY */
+  #lobby { gap: 24px; max-width: 600px; margin: 0 auto; width: 100%; }
+  .lobby-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .room-code {
+    background: var(--surface);
+    border: 1.5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 12px 20px;
+    text-align: center;
+  }
+  .room-code .label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+  .room-code .code { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--accent); letter-spacing: 4px; }
+
+  .players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+  .player-chip {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    font-size: 13px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .player-chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .player-chip.host { border-color: var(--accent); }
+
+  .section-title { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+
+  /* GAME */
+  #game { gap: 16px; max-width: 700px; margin: 0 auto; width: 100%; }
+
+  .game-header {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface); border-radius: var(--radius); padding: 12px 16px;
+    border: 1px solid var(--border);
+  }
+  .scores { display: flex; gap: 16px; flex-wrap: wrap; }
+  .score-item { font-size: 12px; }
+  .score-item .name { color: var(--muted); }
+  .score-item .pts { color: var(--accent); font-family: 'Bebas Neue', sans-serif; font-size: 18px; }
+  .score-item.active .name { color: var(--accent2); }
+
+  /* BLACK CARD */
+  .black-card {
+    background: var(--black-card);
+    border: 2px solid #333;
+    border-radius: 16px;
+    padding: 24px;
+    min-height: 140px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    position: relative;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.8);
+  }
+  .black-card .card-text {
+    font-size: clamp(14px, 3vw, 18px);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.5;
+    font-family: 'Space Mono', monospace;
+  }
+  .black-card .card-text .blank {
+    display: inline-block;
+    border-bottom: 3px solid #fff;
+    min-width: 80px;
+    margin: 0 4px;
+  }
+  .black-card .card-footer { font-size: 10px; color: #555; margin-top: 16px; letter-spacing: 1px; }
+  .black-card .corner-logo {
+    position: absolute; top: 16px; right: 16px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 13px; color: #333; letter-spacing: 2px;
+  }
+
+  /* PHASE BANNER */
+  .phase-banner {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-size: 13px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .phase-banner .icon { font-size: 20px; }
+  .phase-banner strong { color: var(--accent); }
+
+  /* WHITE CARDS HAND */
+  .hand-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .cards-hand {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+  }
+  .white-card {
+    background: var(--white-card);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 14px 12px;
+    cursor: pointer;
+    font-size: 11px;
+    color: #111;
+    font-family: 'Space Mono', monospace;
+    line-height: 1.5;
+    min-height: 90px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+    user-select: none;
+  }
+  .white-card:hover:not(.disabled) { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); border-color: var(--accent); }
+  .white-card.selected { border-color: var(--accent2); transform: translateY(-6px); box-shadow: 0 12px 30px rgba(255,68,68,0.3); }
+  .white-card.disabled { opacity: 0.4; cursor: default; }
+  .white-card .card-footer-w { font-size: 9px; color: #666; margin-top: 8px; }
+
+  /* JUDGING */
+  .submissions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+  }
+  .submission-card {
+    background: var(--white-card);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 14px 12px;
+    font-size: 11px;
+    color: #111;
+    font-family: 'Space Mono', monospace;
+    line-height: 1.5;
+    min-height: 90px;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+  }
+  .submission-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+  .submission-card.winner { border-color: var(--accent); background: #fffbe6; box-shadow: 0 0 0 3px rgba(232,212,77,0.2); }
+
+  /* WINNER ANNOUNCE */
+  .winner-banner {
+    background: var(--surface);
+    border: 2px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+  }
+  .winner-banner h2 { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--accent); letter-spacing: 2px; }
+  .winner-banner .winning-text { font-size: 13px; color: #111; background: var(--white-card); border-radius: 8px; padding: 12px; margin: 12px 0; }
+
+  /* NOTIFICATION */
+  .notif {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--surface); border: 1px solid var(--accent);
+    border-radius: var(--radius); padding: 12px 16px;
+    font-size: 12px; z-index: 100;
+    animation: slideUp 0.3s ease;
+    max-width: 280px;
+  }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  .spinner {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-msg { color: var(--accent2); font-size: 12px; text-align: center; }
+
+  .badge {
+    background: var(--accent2); color: #fff;
+    font-size: 10px; padding: 2px 8px; border-radius: 20px;
+    font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px;
+  }
+  .badge.zar { background: var(--accent); color: #111; }
+
+  @media (max-width: 480px) {
+    .cards-hand { grid-template-columns: repeat(2, 1fr); }
+    .submissions-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ═══════════════ ADMIN PANEL ═══════════════ */
+  .admin-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 24px 16px;
+  }
+  .admin-overlay.open { display: block; }
+  .admin-box {
+    max-width: 680px;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1.5px solid var(--accent);
+    border-radius: 16px;
+    padding: 28px 24px;
+  }
+  .admin-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .admin-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; letter-spacing: 3px; color: var(--accent);
+  }
+  .admin-close {
+    background: none; border: 1.5px solid var(--border);
+    color: var(--muted); font-size: 20px; width: 36px; height: 36px;
+    border-radius: 8px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+  }
+  .admin-close:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  /* login */
+  .admin-login { text-align: center; padding: 20px 0; }
+  .admin-login p { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+  .admin-login input {
+    background: var(--surface2); border: 1.5px solid var(--border);
+    border-radius: var(--radius); color: var(--text);
+    font-family: 'Space Mono', monospace; font-size: 16px;
+    padding: 12px 16px; width: 100%; max-width: 280px;
+    text-align: center; letter-spacing: 4px; outline: none;
+    margin-bottom: 12px; display: block; margin: 0 auto 12px;
+  }
+  .admin-login input:focus { border-color: var(--accent); }
+
+  /* tabs */
+  .admin-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+  .admin-tab {
+    flex: 1; padding: 10px; border-radius: var(--radius);
+    border: 1.5px solid var(--border); background: none;
+    color: var(--muted); font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 2px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .admin-tab.active { border-color: var(--accent); color: var(--accent); background: rgba(232,212,77,0.08); }
+  .admin-tab.black-tab.active { border-color: #555; color: #eee; background: rgba(255,255,255,0.05); }
+
+  /* form */
+  .admin-form { display: flex; gap: 8px; margin-bottom: 20px; }
+  .admin-form textarea {
+    flex: 1; background: var(--surface2); border: 1.5px solid var(--border);
+    border-radius: var(--radius); color: var(--text);
+    font-family: 'Space Mono', monospace; font-size: 13px;
+    padding: 10px 12px; resize: vertical; min-height: 56px; outline: none;
+  }
+  .admin-form textarea:focus { border-color: var(--accent); }
+  .admin-form textarea.black-input:focus { border-color: #666; }
+  .btn-add {
+    background: var(--accent); border: none; border-radius: var(--radius);
+    color: #0a0a0a; font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 2px; padding: 0 18px;
+    cursor: pointer; white-space: nowrap; align-self: flex-start;
+    padding-top: 10px; padding-bottom: 10px;
+  }
+  .btn-add:hover { opacity: 0.85; }
+  .btn-add.black-add { background: #333; color: #eee; }
+
+  /* hint */
+  .admin-hint {
+    font-size: 11px; color: var(--muted); margin-bottom: 16px;
+    background: rgba(255,255,255,0.04); border-radius: 8px;
+    padding: 8px 12px; line-height: 1.7;
+  }
+
+  /* cards list */
+  .admin-list { display: flex; flex-direction: column; gap: 8px; max-height: 420px; overflow-y: auto; }
+  .admin-card-row {
+    display: flex; align-items: flex-start; gap: 8px;
+    background: var(--surface2); border-radius: 10px;
+    padding: 10px 12px; border: 1px solid var(--border);
+  }
+  .admin-card-row.is-black { border-color: #333; background: #111; }
+  .admin-card-row .card-text-edit {
+    flex: 1; background: none; border: none; color: var(--text);
+    font-family: 'Space Mono', monospace; font-size: 12px;
+    line-height: 1.6; resize: none; outline: none; min-height: 36px;
+  }
+  .admin-card-row.is-black .card-text-edit { color: #eee; }
+  .row-actions { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
+  .btn-save-card {
+    background: none; border: 1px solid var(--accent); color: var(--accent);
+    border-radius: 6px; font-size: 10px; padding: 3px 8px;
+    cursor: pointer; font-family: 'Space Mono', monospace;
+  }
+  .btn-save-card:hover { background: rgba(232,212,77,0.1); }
+  .btn-del-card {
+    background: none; border: 1px solid var(--accent2); color: var(--accent2);
+    border-radius: 6px; font-size: 10px; padding: 3px 8px;
+    cursor: pointer; font-family: 'Space Mono', monospace;
+  }
+  .btn-del-card:hover { background: rgba(255,68,68,0.1); }
+  .admin-count { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+  .admin-empty { text-align: center; color: var(--muted); font-size: 13px; padding: 24px; }
+
+  /* change password */
+  .admin-section-title {
+    font-size: 10px; color: var(--muted); letter-spacing: 2px;
+    text-transform: uppercase; margin: 20px 0 10px;
+  }
+  .admin-pwd-row { display: flex; gap: 8px; }
+  .admin-pwd-row input {
+    flex: 1; background: var(--surface2); border: 1.5px solid var(--border);
+    border-radius: var(--radius); color: var(--text);
+    font-family: 'Space Mono', monospace; font-size: 13px;
+    padding: 10px 12px; outline: none;
+  }
+  .admin-pwd-row input:focus { border-color: var(--accent); }
+  .admin-msg { font-size: 12px; margin-top: 8px; min-height: 18px; }
+  .admin-msg.ok { color: #4caf50; }
+  .admin-msg.err { color: var(--accent2); }
+
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HOME -->
+  <div id="home" class="screen active">
+    <div class="hero">
+      <div class="logo">H<span>D</span>P</div>
+      <div class="tagline">Humanos De Puta &mdash; El juego de cartas</div>
+    </div>
+    <div class="action-group">
+      <input type="text" id="nameInput" placeholder="Tu nombre..." maxlength="20">
+      <div class="error-msg" id="homeError"></div>
+      <button class="btn" onclick="createRoom()">Crear sala</button>
+      <div class="divider">o unite</div>
+      <input type="text" id="codeInput" placeholder="Código de sala..." maxlength="6" style="text-transform:uppercase">
+      <button class="btn secondary" onclick="joinRoom()">Unirme</button>
+    </div>
+  </div>
+
+  <!-- LOBBY -->
+  <div id="lobby" class="screen">
+    <div class="lobby-header">
+      <div>
+        <div class="logo" style="font-size:36px">HDP</div>
+      </div>
+      <div class="room-code">
+        <div class="label">Código de sala</div>
+        <div class="code" id="lobbyCode">——</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Compartí este código</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-title">Jugadores (<span id="playerCount">0</span>)</div>
+      <div class="players-grid" id="playersList"></div>
+    </div>
+
+    <div id="lobbyHostControls" style="display:none">
+      <div class="section-title">Configuración</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <span style="font-size:13px;color:var(--muted)">Puntos para ganar:</span>
+        <input type="text" id="pointsToWin" value="7" style="width:60px;text-align:center">
+      </div>
+      <button class="btn" id="startBtn" onclick="startGame()" disabled>Empezar partida</button>
+      <div class="error-msg" style="margin-top:8px" id="lobbyError"></div>
+    </div>
+    <div id="lobbyWaiting" style="display:none;text-align:center;color:var(--muted);font-size:13px">
+      Esperando que el host empiece la partida...
+    </div>
+    <button class="btn secondary" onclick="leaveRoom()" style="margin-top:auto">Salir</button>
+  </div>
+
+  <!-- GAME -->
+  <div id="game" class="screen">
+    <div class="game-header">
+      <div class="scores" id="scoreBoard"></div>
+      <div style="font-size:11px;color:var(--muted)">Ronda <span id="roundNum">1</span></div>
+    </div>
+
+    <div class="phase-banner" id="phaseBanner">
+      <span class="icon">🃏</span>
+      <span id="phaseText">Esperando...</span>
+    </div>
+
+    <!-- Black card -->
+    <div class="black-card" id="blackCardDisplay">
+      <div class="corner-logo">HDP</div>
+      <div class="card-text" id="blackCardText">Cargando...</div>
+      <div class="card-footer">Cartas contra la humanidad argentina</div>
+    </div>
+
+    <!-- Winner announcement -->
+    <div class="winner-banner" id="winnerBanner" style="display:none">
+      <h2>🏆 <span id="winnerName">—</span> ganó la ronda!</h2>
+      <div class="winning-text" id="winnerCard">—</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:8px">Siguiente ronda en 4 segundos...</div>
+    </div>
+
+    <!-- MY HAND (answering phase) -->
+    <div id="handSection" style="display:none">
+      <div class="hand-label">Tu mano &mdash; elegí una carta</div>
+      <div class="cards-hand" id="myHand"></div>
+      <div style="margin-top:12px;display:flex;gap:10px">
+        <button class="btn" id="submitBtn" onclick="submitCard()" disabled>Enviar carta</button>
+      </div>
+      <div class="error-msg" id="gameError"></div>
+    </div>
+
+    <!-- WAITING FOR OTHERS -->
+    <div id="waitingSection" style="display:none;text-align:center;padding:20px;color:var(--muted);font-size:13px">
+      <div class="spinner" style="margin:0 auto 12px"></div>
+      Esperando que los demás envíen sus cartas...
+      <div id="submittedCount" style="margin-top:8px;font-size:11px"></div>
+    </div>
+
+    <!-- ZAR JUDGING -->
+    <div id="judgingSection" style="display:none">
+      <div class="hand-label">Elegí la respuesta más graciosa</div>
+      <div class="submissions-grid" id="submissionsGrid"></div>
+    </div>
+
+    <!-- ZAR WAITING -->
+    <div id="zarWaiting" style="display:none;text-align:center;padding:20px;color:var(--muted);font-size:13px">
+      <div class="spinner" style="margin:0 auto 12px"></div>
+      Sos el Zar — esperando las respuestas...
+      <div id="zarSubmittedCount" style="margin-top:8px;font-size:11px"></div>
+    </div>
+
+    <!-- GAME OVER -->
+    <div id="gameOverSection" style="display:none;text-align:center;padding:24px">
+      <div class="logo" style="font-size:48px;margin-bottom:8px">HDP</div>
+      <h2 style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);letter-spacing:2px">
+        🏆 <span id="gameWinner">—</span> ganó la partida!
+      </h2>
+      <div style="color:var(--muted);font-size:12px;margin-top:8px" id="finalScores"></div>
+      <button class="btn" style="margin-top:24px;max-width:280px" onclick="backToLobby()">Jugar de nuevo</button>
+    </div>
+
+    <button class="btn secondary" onclick="leaveRoom()" style="margin-top:auto;max-width:200px">Abandonar</button>
+  </div>
+
+<!-- ═══════════════ ADMIN PANEL ═══════════════ -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-box">
+    <div class="admin-header">
+      <div class="admin-title">⚙ Admin HDP</div>
+      <button class="admin-close" onclick="closeAdmin()">✕</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="adminLogin">
+      <div class="admin-login">
+        <p>Ingresá la contraseña de administrador</p>
+        <input type="password" id="adminPwdInput" placeholder="••••••••"
+          onkeydown="if(event.key==='Enter')checkAdminPwd()">
+        <div style="margin-top:12px">
+          <button class="btn" style="max-width:200px" onclick="checkAdminPwd()">Entrar</button>
+        </div>
+        <div class="admin-msg err" id="adminLoginErr"></div>
+      </div>
+    </div>
+
+    <!-- PANEL (hidden until logged in) -->
+    <div id="adminPanel" style="display:none">
+
+      <!-- TABS -->
+      <div class="admin-tabs">
+        <button class="admin-tab active" id="tabWhite" onclick="switchAdminTab('white')">Cartas blancas</button>
+        <button class="admin-tab black-tab" id="tabBlack" onclick="switchAdminTab('black')">Cartas negras</button>
+        <button class="admin-tab" id="tabSettings" onclick="switchAdminTab('settings')" style="flex:0;padding:10px 14px;font-size:14px">⚙</button>
+      </div>
+
+      <!-- WHITE TAB -->
+      <div id="adminTabWhite">
+        <div class="admin-hint">
+          Las cartas blancas son <strong>respuestas</strong> que los jugadores eligen.
+          Podés escribir lo que quieras. Se mezclan con las 1000 cartas originales.
+        </div>
+        <div class="admin-form">
+          <textarea id="newWhiteText" class="white-input" placeholder="Ej: El asado sin lomo porque 'está caro'..."></textarea>
+          <button class="btn-add" onclick="addCustomCard('white')">+ Agregar</button>
+        </div>
+        <div class="admin-count" id="whiteCount">Cargando...</div>
+        <div class="admin-list" id="whiteList"></div>
+      </div>
+
+      <!-- BLACK TAB -->
+      <div id="adminTabBlack" style="display:none">
+        <div class="admin-hint">
+          Las cartas negras son <strong>frases con blancos</strong> que completan los demás.
+          Usá <code>________</code> (guiones bajos) para marcar el espacio en blanco.
+        </div>
+        <div class="admin-form">
+          <textarea id="newBlackText" class="black-input" placeholder="Ej: La causa de todos los males en Argentina es ________." style="border-color:#444"></textarea>
+          <button class="btn-add black-add" onclick="addCustomCard('black')">+ Agregar</button>
+        </div>
+        <div class="admin-count" id="blackCount">Cargando...</div>
+        <div class="admin-list" id="blackList"></div>
+      </div>
+
+      <!-- SETTINGS TAB -->
+      <div id="adminTabSettings" style="display:none">
+        <div class="admin-section-title">Cambiar contraseña</div>
+        <div class="admin-pwd-row">
+          <input type="password" id="newPwd1" placeholder="Nueva contraseña">
+          <input type="password" id="newPwd2" placeholder="Repetir contraseña">
+          <button class="btn" style="white-space:nowrap;padding:10px 16px" onclick="changeAdminPwd()">Guardar</button>
+        </div>
+        <div class="admin-msg" id="pwdMsg"></div>
+
+        <div class="admin-section-title" style="margin-top:28px">Info</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.8">
+          Para abrir este panel desde cualquier pantalla:<br>
+          escribí <strong style="color:var(--accent)">hdpadmin</strong> en cualquier campo de texto del juego,<br>
+          o presioná <strong style="color:var(--accent)">Ctrl+Shift+A</strong> en la PC.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+// ============================================================
+// FIREBASE CONFIG — reemplazá con tu config real
+// ============================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyDemo-placeholder",
+  databaseURL: "https://hdp-online-ccce4-default-rtdb.firebaseio.com",
+  projectId: "hdp-online-ccce4"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ============================================================
+// CARTAS — SE PRESERVAN DEL ARCHIVO ORIGINAL (ver arriba)
+// ============================================================
+const BLACK_CARDS = ["El verdadero plan económico de Argentina es ________.", "Milei descubrió que la raíz de todos los males es ________.", "El próximo candidato presidencial propone solucionar todo con ________.", "El ministro de economía renunció luego de ________.", "La oposición presentó un proyecto de ley para prohibir ________.", "Cristina dijo en su discurso que la culpa es de ________.", "El FMI exige como condición del préstamo ________.", "El paro general fue convocado por culpa de ________.", "El escándalo del gobierno estalló cuando encontraron ________ en la casa del funcionario.", "La nueva política de ajuste incluye eliminar ________.", "El presidente explicó en cadena nacional que ________ es culpa del kirchnerismo.", "El candidato perdió las elecciones por haber dicho que ________.", "La corrupción argentina se explica principalmente por ________.", "El nuevo impuesto grava exclusivamente ________.", "En el acto del 25 de mayo, el intendente prometió ________.", "El Congreso aprobó a las 4 AM una ley que legaliza ________.", "Según las encuestas, el 70% de los argentinos cree que ________.", "El gobierno anunció que ________ es un bien de lujo.", "La licitación pública fue ganada por la empresa ________ S.A.", "El diputado fue filmado ________ durante la sesión.", "El gobernador inauguró ________ que ya estaba roto.", "El vocero presidencial confirmó que ________ es fake news.", "La auditoría reveló que el ministerio gastó $50 millones en ________.", "El senador pidió disculpas por ________ pero igual no renunció.", "La gestión anterior dejó como herencia ________.", "La inflación llegó al 300% y los economistas culpan a ________.", "Mi sueldo no me alcanza ni para ________.", "El dólar blue llegó a $5000 gracias a ________.", "Para combatir la pobreza el gobierno decidió ________.", "El trabajador informal promedio sobrevive gracias a ________.", "La cepo cambiario fue levantado justo cuando yo iba a comprar ________.", "El banco me rechazó el crédito porque ________.", "Después de tres meses buscando laburo conseguí un puesto de ________.", "Mi jefe me explicó que el aumento salarial fue absorbido por ________.", "El emprendedor argentino quebrará eventualmente por culpa de ________.", "Vendí ________ para pagar el alquiler.", "La startup prometió revolucionar ________ y cerró en seis meses.", "El aguinaldo no me alcanzó ni para ________.", "El INDEC anunció que ________ bajó de precio.", "La canasta básica ya incluye ________ como ítem de lujo.", "Me dieron un bono por ________ y con eso me compré un café.", "La empresa decidió remplazar a todos los empleados por ________.", "El sindicato negoció ________ como paritaria.", "Para ahorrar en dólares los argentinos esconden ________ bajo el colchón.", "El monotributo me come el sueldo pero al menos puedo facturar ________.", "Mi psicóloga cobró $120.000 la sesión para decirme que tengo ________.", "Veinte años de terapia y descubrí que el problema era ________.", "El psicoanálisis argentino explica la inflación como ________ del inconsciente.", "Mi terapeuta lacaniana interpretó mi sueño con ________ como un síntoma.", "La medicación me ayudó pero sigo sin poder manejar ________.", "Mi analista se tomó tres semanas de vacaciones justo cuando yo estaba procesando ________.", "El diagnóstico fue claro: DSM-V categoría ________, etiología argentina.", "La resistencia al análisis se manifiesta en mi relación con ________.", "Tres generaciones de mi familia van al mismo psicoanalista por ________.", "Mi terapeuta me dijo que deje de quejarme de ________ y que lo elabore.", "La angustia existencial del argentino medio se concentra en ________.", "Pagué $2000 el libro de autoayuda que me enseñó que el problema era ________.", "La Selección perdió porque Scaloni decidió ________.", "El árbitro cobró ________ y armó un quilombo bárbaro.", "Boca perdió la Libertadores por culpa de ________.", "River gastó el presupuesto anual en ________ que duró dos partidos.", "El DT fue echado después de ________.", "El jugador fue transferido a Europa por ________ pesos y un sándwich.", "La hinchada invadió la cancha porque ________.", "VAR revisó la jugada durante 20 minutos y anuló ________.", "El capitán del equipo fue suspendido por ________.", "Maradona en el cielo llora cada vez que ve ________.", "En el vestuario encontraron ________ que nadie supo explicar.", "El partido fue suspendido por ________.", "La subcomisión del fútbol aprobó gastar $500.000 en ________.", "El juvenil de 17 años fue vendido a Europa porque tiene ________ y buen pie.", "En el colectivo 60 siempre hay alguien que ________.", "El vecino del 4°B tiene la costumbre de ________.", "La cola del supermercado se formó porque la cajera ________.", "La reunión de consorcio estalló cuando alguien dijo que ________.", "El delivery llegó con todo frío y sin ________.", "Tardé cuatro horas en el PAMI para que me dijeran ________.", "El médico del hospital público me recetó ________ que no tiene la farmacia.", "El trámite en el Registro Civil duró tres días por ________.", "El colectivo no pasó en una hora y cuando llegó venía lleno de ________.", "El portero eléctrico del edificio está roto desde 2011 y nadie arregla ________.", "El wifi del café de Palermo cortó justo cuando yo iba a subir ________.", "El asado duró doce horas porque alguien invitó ________ sin avisar.", "Mi mamá me llamó a las 7 AM para decirme que ________.", "El grupo de WhatsApp familiar explotó cuando alguien mandó ________.", "El turno del dentista está disponible para ________ del año que viene.", "El plan de ahorro me da un auto en 2033 si no me muero antes de ________.", "El kiosco del barrio no tiene cambio pero sí tiene ________.", "El plomero cobró $80.000 y el caño sigue perdiendo ________.", "La reunión de padres del colegio derivó en una pelea por ________.", "El ascensor del edificio está roto hace seis meses esperando ________.", "El vecino de arriba hace ________ a las 3 de la mañana.", "La fiesta de quince terminó mal cuando el padre de la novia ________.", "El cumpleaños del nene terminó en escándalo gracias a ________.", "Mi abuela guardaba ________ en el freezer desde 1987.", "El taxi del aeropuerto me cobró el doble porque ________.", "La UBA perdió el presupuesto por ________ y cerraron la fotocopiadora.", "El profesor faltó cuatro clases seguidas por culpa de ________.", "El final libre fue suspendido porque ________ no entró al sistema.", "El plan de estudios incluye una materia obligatoria sobre ________.", "Me recibí después de 12 años estudiando ________ que no consigue laburo.", "La tesis de licenciatura trata el problema de ________ en el contexto neoliberal.", "El decano fue acusado de ________.", "La fotocopiadora de exactas sólo tiene ________ en stock.", "El pasillo de la facultad huele a ________ desde 1994.", "La carrera de ________ tiene lista de espera de tres años.", "El influencer perdió sus seguidores por publicar ________.", "El tuit del funcionario fue malinterpretado cuando dijo que ________.", "El algoritmo me recomienda ________ porque 'cree que me interesa'.", "El hack de la base de datos del Estado filtró ________ de todos los ciudadanos.", "La app del gobierno sirve exclusivamente para ________.", "El youtuber explicó por qué ________ es mejor que terapia.", "El streamer perdió el canal por transmitir en vivo ________.", "El deepfake del presidente lo muestra diciendo que ________.", "La IA del chatbot del banco me sugirió ________ para solucionar mi deuda.", "Mi feed de Instagram es puro ________ y publicidades de cremas.", "La película ganó el Oscar a pesar de ________.", "Mirtha Legrand preguntó en la mesa si era cierto que ________.", "El autor de ________ aseguró que es su obra más personal.", "El festival de música fue cancelado porque ________.", "La obra de teatro terminó con el público abucheando ________.", "La serie de Netflix sobre Argentina muestra al porteño como alguien que ________.", "El libro de autoayuda más vendido del año explica cómo superar ________.", "El reality show eliminó al participante por ________.", "La canción número uno habla sobre ________ de manera metafórica.", "El crítico de arte describió la instalación como '________ visceral'.", "Me dejaron por WhatsApp después de contarles sobre ________.", "La primera cita terminó cuando mencioné que ________.", "Mi ex me bloqueó en todas las redes después de ________.", "La app de citas matcheó a alguien que en el perfil ocultaba ________.", "Me enamoré de alguien que tenía ________ como hobby.", "La relación terminó cuando descubrí que ________.", "El casamiento se canceló cuando el padre de la novia mencionó ________.", "Tres años de noviazgo y recién me enteré de que ________.", "El terapeuta de pareja sugirió ________ como ejercicio de confianza.", "Mi suegra opina que el problema en nuestra relación es ________.", "El médico forense determinó que la causa de muerte fue ________.", "La confesión del detenido incluyó detalles sobre ________.", "El expediente judicial fue clausurado después de encontrar ________.", "El fiscal pidió prisión preventiva por ________.", "Según el informe toxicológico, la víctima tenía ________ en sangre.", "La autopsia reveló que el fallecido murió haciendo ________.", "El testigo protegido declaró haber visto ________ esa noche.", "El detenido explicó que todo fue un malentendido sobre ________.", "La cámara de seguridad captó ________ a las 3:47 AM.", "El abogado defensor argumentó que su cliente tenía ________ como coartada.", "Al final de todo, la vida no tiene sentido porque ________.", "Dios abandonó Argentina después de ver ________.", "El filósofo argentino concluyó que la existencia es ________.", "Si la muerte pudiera hablar, le diría a los argentinos que ________.", "Después de todo lo que viví, lo único que me queda es ________.", "El universo nos envió ________ como señal de que ya fue.", "La única certeza en la vida es ________ y los impuestos.", "El nihilismo argentino se resume en ________.", "La generación Z argentina tiene como mayor trauma ________.", "Contemplando el vacío, el porteño sólo piensa en ________.", "La causa penal fue archivada a cambio de ________.", "El médico me dijo que el resultado del análisis mostraba ________.", "En el club del barrio la pelea empezó por ________.", "El choripán del acto político costó ________ más que el sueldo de un maestro.", "Nadie supo explicar cómo ________ terminó en el despacho del juez.", "El periodista fue censurado después de revelar que ________.", "La licitación fue declarada desierta porque nadie quiso hacerse cargo de ________.", "Mi abuelo todavía guarda ________ del corralito.", "El banco central imprimió billetes de ________ y nadie se sorprendió.", "La marcha del millón terminó cuando empezó a llover y ________.", "El vecino denunció a la municipalidad por ________ y ganó.", "El inspector de la AFIP encontró ________ escondido en la trastienda.", "La empresa familiar quebró porque ________.", "Mi primo que estudió en el exterior volvió para ________.", "El político dio una conferencia de prensa para explicar ________.", "La ambulancia tardó dos horas porque ________.", "El tren a Mar del Plata se demoró seis horas por ________.", "La cancha de paddle del country fue clausurada por ________.", "El jardinero del barrio privado fue despedido por ________.", "La señora del piso de arriba inundó mi departamento con ________.", "El veterinario diagnosticó al perro con ________ causado por el estrés del dueño.", "El fotógrafo de casamiento se borró con el anticipo y también con ________.", "El chef del restaurante de Palermo me explicó que el plato lleva ________ orgánico.", "La app de delivery cobró $800 de envío para traerme ________.", "El grupo de Telegram del edificio explota cada vez que alguien menciona ________.", "El detective privado me presentó fotos de ________ y me cobró una fortuna.", "El notario se negó a escriturar porque ________.", "La empleada doméstica renunció después de encontrar ________ en el placard.", "El contador me explicó que puedo deducir ________ del monotributo.", "La mutual del sindicato cubre ________ solo si llorás mucho.", "El secreto mejor guardado de la Argentina es ________.", "La sociedad argentina nunca va a superar ________.", "El CONICET publicó un estudio que demuestra que ________ afecta la productividad.", "El ministro de educación admitió que ________ no se enseña en ninguna escuela.", "La generación Z argentina no sabe qué hacer con ________.", "El retiro voluntario fue aprovechado por ________ empleados que ya no venían.", "El agente de seguridad vial detuvo al conductor por ________.", "La tesis doctoral de 400 páginas concluye que ________ sigue siendo un problema.", "Después de 20 años de matrimonio, lo que más me molesta es ________.", "El médico me dijo que deje de ________ o las consecuencias serán ________.", "El detective privado me entregó un sobre con fotos de ________ y una factura de $500.000.", "El escribano no firmó la escritura porque encontró ________ en el título.", "El arquitecto diseñó la casa perfecta pero olvidó incluir ________.", "La inteligencia artificial argentina fue programada para ________ y falló igual."];
+const WHITE_CARDS = ["El plan motosierra", "El dólar soja", "Una coima en efectivo", "El helicóptero presidencial", "La cadena nacional a las 11 PM", "Un decreto de necesidad y urgencia", "La casta política", "El déficit fiscal", "El ajuste tarifario", "La emisión monetaria descontrolada", "Tres ex presidentes presos", "La reforma laboral que nunca llega", "El pacto de mayo", "La sesión especial a las 3 AM", "El voto no positivo", "El sobre de Antonini Wilson", "El cuaderno de las coimas", "Los $900 millones en la casa de José López", "La valija de Antonini", "El sueldo de Milei en dólares", "La bomba de humo legislativa", "El índice de pobreza subiendo", "Juntos por el Cambio pero separados", "El Ministerio de la Felicidad", "Dos boletas truchas", "La lista sábana", "El transfuguismo político", "El armado electoral fallido", "La segunda vuelta sorpresa", "El candidato testimonial", "La foto de la quinta de Olivos", "La máscara de Macri", "El kirchnerismo tropical", "Los libertarios de Twitter", "La grieta eterna", "Tres pesos y un boleto vencido", "El fideicomiso trucado", "El monotributo categoría F", "La quiebra técnica del Banco Nación", "El cepo cambiario con escafandra", "La brecha del 200%", "El índice de precios del INDEC reloaded", "El billete de $10.000 arrugado", "Un plazo fijo al 40% anual", "La tasa del Banco Central", "El reperfilamiento", "La devaluación del lunes", "El corralito 2.0", "Un sueldo en pesos de octubre", "El bono de fin de año que no alcanza para una pizza", "La deuda en dólares que nunca termina", "Los bonos del tesoro defaulteados", "La canasta básica total inasequible", "El índice de precios de Palermo", "Un descuento del 70% en Falabella que cerró", "El trabajo en negro con recibo", "El vale de almuerzo de $500", "El aumento del 30% cuando la inflación es 200%", "El pluriempleo disfrazado de emprendimiento", "Ser autónomo en Argentina", "El registro de empleadores AFIP roto", "La mora hipotecaria", "El alquiler en negro", "La expensa extraordinaria sin aviso", "Tres pesos de ganancia en el balance", "El síndico concursal", "La quiebra fraudulenta", "El fideicomiso de obra parado", "El desarrollista que se fugó", "La constructora fantasma", "La resistencia al análisis", "El acting out del analizante", "La transferencia negativa", "El superyó castigador", "El complejo de Edipo sin resolver", "La angustia de castración", "El goce del síntoma", "El objeto a lacaniano", "La pulsión de muerte", "La escisión del yo", "El narcisismo de las pequeñas diferencias", "El duelo no elaborado", "El trauma de infancia reprimido", "La neurosis obsesiva de manual", "El mecanismo de defensa de proyección", "La identificación proyectiva", "El self grandioso herido", "La dependencia emocional patológica", "El trastorno limítrofe sin diagnóstico", "La alexitimia porteña", "El análisis que dura 15 años", "La sesión de cuatro minutos con Lacan", "El analista que se duerme", "La cura por la palabra", "El significante amo", "Psicoanálisis cuatro veces por semana", "El diván importado", "La resistencia pasivo-agresiva", "El sueño interpretado como deseo sexual", "El chiste como formación del inconsciente", "El lapsus freudiano clásico", "La elaboración de duelo porteña", "La identidad fragmentada", "El tercer tiempo con asado", "La barra brava cobrando peaje", "El pase libre para el intendente", "El gol en offside del siglo", "El VAR que duró 25 minutos", "La patada de atrás sin roja", "El hincha que prende fuego la butaca", "El jugador que pide el cambio lesionado y corre", "El técnico que llora en conferencia", "El empresario del jugador con doble contrato", "El tribunal de disciplina de la AFA", "El partido reprogramado por lluvia fina", "El ascenso con descenso económico", "La clausura del estadio por humedad", "El gol olímpico de Boca en 2024", "La mano de Dios 2.0", "El gol fantasma del Monumental", "El clásico con público visitante prohibido", "El préstamo del jugador estrella que vuelve gordo", "El cambio táctico a los 89", "La pelota que rebotó en el palo tres veces", "El portero que salió a cabecear el córner", "El delantero con 0 goles en 15 partidos", "El enganche que solo juega bien afuera", "El capitán con tobillo vendado bailando cumbia", "La mascota del club perseguida por barras", "El gasista matriculado que cobra en negro", "La humedad en la pared del baño", "El monoambiente con vista al pulmón de manzana", "La expensa de enero más cara que el alquiler", "El vecino que practica batería a las 2 AM", "El wifi que solo funciona en una esquina", "La boleta de luz impagable", "El turno web que nunca aparece", "La app del Estado que no carga", "El trámite que requiere el trámite previo", "La ventanilla cerrada por sistema", "El turno del Registro Civil para 2026", "La cola del banco un lunes de mañana", "El cajero sin billetes", "El combustible que subió dos veces esta semana", "El semáforo roto hace seis meses", "El bache del tamaño de un Fiat 600", "La ciclovía bloqueada por obras", "El corte de luz de cuatro horas en verano", "El agua que sale marrón", "El gas cortado por deuda", "La factura de $50.000 de una llamada de tres minutos", "El delivery que llega una hora tarde con el pedido equivocado", "El package de Netflix que sube $2000 por mes", "El streaming con publicidades", "La reunión de consorcio que dura cuatro horas", "El ascensor con certificado vencido", "La matafuego del pasillo vacío", "El portero eléctrico que electrocuta", "El timbre roto desde la mudanza", "La llave que hay que dar vueltas tres veces", "El caño que pierde dentro de la pared", "La gotera que aparece solo cuando llueve fuerte", "El electricista que dice que no tiene los cables", "La pintura de la fachada que cae sola", "El patio de luces lleno de basura del vecino", "El gato del tercer piso", "El olor a fritanga del departamento de abajo", "El ruido de la heladera a las 4 AM", "La cama que cruje en cada movimiento", "El velador que parpadea solo", "La lista de espera de seis meses del hospital", "El turno de oncología para 2027", "El remedio que no cubre la obra social", "La receta médica ilegible", "El análisis perdido en el sistema", "La historia clínica digitalizada incorrectamente", "El diagnóstico diferencial de diez páginas sin conclusión", "La cirugía postergada cuatro veces", "La cama de guardia ocupada seis días", "El médico de guardia que no durmió en 36 horas", "El pasillo del Garrahan a las 3 AM", "La ambulancia que tarda 40 minutos", "El insumo faltante en el quirófano", "El medicamento vencido del botiquín", "El aparato de rayos que se rompió", "El chori pinchado antes de tiempo", "El asador que no deja que nadie toque la parrilla", "El vacío que tardó tres horas", "El invitado vegano al asado", "El chimichurri de la abuela que es secreto", "La ensalada que nadie come", "El pan que se terminó antes que la carne", "La gaseosa tibia", "El postre que trajo alguien que no sabe cocinar", "El café de filtro aguado", "Los restos del asado del domingo calentados el martes", "La tarta de espinaca sin espinaca", "El milanesa de soja", "La pizza con ananá del que no lee la room", "El sushi del delivery que llegó templado", "El medialunas duras del quiosco", "El café en jarrito con el azúcar ya puesto", "El mate frío por distracción", "El tereré que nadie entiende pero todos prueban", "La torta de cumpleaños con 3 pisos", "El cumpleaños con bocaditos de las 6 PM", "El sandwich de miga sin miga", "La empanada de carne picante sin aviso", "El locro de julio en Palermo a $3500", "El bife de chorizo quemado pero presentado como al punto", "El vino caro que el anfitrión no abre para sus invitados", "La cerveza artesanal que sabe a jabón", "El fernet con Pepsi porque no había Coca", "El clericó de frutas pasadas", "El jugo Tang en jarra de plástico amarillo", "Una sobredosis de antidepresivos genéricos", "El frasco de pastillas del cajón de la mesita", "El WhatsApp de despedida que nadie leyó a tiempo", "El certificado de defunción mal llenado", "El velorio al que nadie fue", "La herencia disputada entre hermanos en Navidad", "El testamento escrito con birome en una servilleta", "La caja fuerte vacía del difunto", "El seguro de vida que no cubría eso", "El documento de identidad vencido del muerto", "El cuerpo sin identificar en la morgue", "El cajón de pino sin barnizar", "La corona de flores plásticas", "El llanto de hipócrita en el velorio", "El familiar que heredó y desapareció", "La cuenta bancaria bloqueada post mortem", "El expediente judicial sin resolver hace 15 años", "El preso preventivo olvidado", "La condena firme pero nunca ejecutada", "El tobillera electrónica cortada", "El arresto domiciliario en chalet de Nordelta", "La fianza imposible de pagar", "El habeas corpus rechazado", "El abogado de oficio que vino dos minutos", "La celda de aislamiento por indisciplina", "El pabellón controlado por presos", "La causa prescripta", "El juez recusado y vuelto a recusar", "El peritaje trucado", "La prueba perdida en el juzgado", "El archivo sellado por 50 años", "El testigo que cambió la declaración", "El imputado que se fugó a Uruguay", "El procesado que sigue siendo funcionario", "La sentencia absolutoria incomprensible", "El burnout crónico sin diagnóstico", "La depresión que se llama 'estar cansado'", "El pánico a los domingos al atardecer", "La crisis de los 30 en cuotas sin interés", "El sueño recurrente con el final de carrera", "La vocación que el mercado no necesita", "El plan de vida que la inflación destruyó", "El hijo que se fue y no vuelve", "El regreso al país de los que se fueron", "La nostalgia de algo que nunca existió", "El amor de adolescencia idealizado treinta años después", "El bar del barrio que cerró", "El almacén de la esquina que fue remplazado por un Carrefour Express", "La cancha donde jugabas de pibe que es ahora un shopping", "El árbol del patio de la infancia talado", "El abuelo que ya no te reconoce", "El sábado a la noche viendo Netflix solo", "El cumpleaños propio pasado en silencio", "La llamada que nunca devolviste", "El mensaje que nunca mandaste", "La disculpa que llegó tarde", "El perdón que nunca pediste", "El amor propio destruido sistemáticamente", "El sueño que decidiste no contar", "La oportunidad que dejaste pasar por miedo", "La versión de vos que abandonaste", "El futuro que planeaste a los 22", "La carrera equivocada pero ya egresado", "El título universitario en el cajón sin usar", "El idioma que dejaste de estudiar", "Los cursos de Excel que nunca terminaste", "El gimnasio al que fuiste dos veces", "La dieta que empezaste el lunes", "La meditación que duró una semana", "El diario íntimo que nadie debe leer jamás", "Las fotos que deberías borrar", "Una multa de tránsito impagable", "El peaje de la autopista en obras permanentes", "El Metrobus vacío a las 2 PM", "El vagón de mujeres invadido", "La escalera mecánica del subte rota", "El molinete del subte que se come el sube", "El colectivo que para a diez metros de la parada", "El remis sin cinturón", "El taxímetro trucado de Ezeiza", "El transporte privado que te cobra el puente", "La VTV vencida hace dos años", "El seguro solo contra terceros desactualizados", "La patente impaga del vecino", "El auto que bloquea la entrada del garage", "El estacionamiento medido que no funciona", "La grúa que no aparece nunca", "El inspector de infracciones que mira para otro lado", "La comisaría sin papel para el parte", "El formulario desactualizado del trámite", "El turno web que expira en 30 segundos", "La contraseña del sistema que caducó", "El token del banco que no llega al celular", "La verificación de dos pasos que bloquea la cuenta", "El correo electrónico del estado", "El portal Mi Argentina caído", "El sistema AFIP en mantenimiento", "El SRT sin respuesta hace cuatro meses", "La ANSES que rebota la solicitud", "El juzgado sin expediente digital", "El legajo perdido en el archivo", "Los Pimpinela en un asado de empresa", "La actuación de Moria en un show en vivo", "Showmatch en horario central", "El debate de Gran Hermano en el trabajo", "El participante de MasterChef que lloró", "El jurado de Bailando que opinó de política", "La conductora de Telefe que preguntó lo impreguntable", "El panelista del programa de chimentos", "La filtración de Ángel de Brito", "La información exclusiva de Yanina Latorre", "El comunicado de prensa de Flor de la V", "La foto de Wanda Nara en Milán", "El chimento del famoso que se separó", "La paternidad negada en televisión en vivo", "El ADN en el programa de Mauro Viale", "El beso del bailarín en el programa familiar", "El escándalo del matrimonio de famosos", "La reconciliación falsa para el rating", "El libro de memorias del político que nadie leyó", "La autobiografía inventada", "El one-man-show del humorista sin material nuevo", "El concierto de regreso por tercera vez", "La novela turca doblada en Buenos Aires", "El remake argentino del éxito americano", "La serie de streaming argentina sobre los 70", "El documental de Netflix sobre Maradona número 12", "La biopic no autorizada", "El musical de avenida corrientes a 300 pesos", "La feria del libro sin libros interesantes", "El autor que solo hace presentaciones", "El grupo de WhatsApp de ex compañeros de primaria", "La foto de perfil del bautismo de 1987", "El meme del mes pasado enviado por el tío", "La cadena del bien de la abuela", "La noticias falsa reenviada con 'no sé si será verdad'", "El video de 40 segundos que come datos", "El audio de WhatsApp de 6 minutos", "El sticker mal recortado", "La llamada de Teams con el micrófono apagado", "El Zoom con el fondo virtual que no funciona", "La reunión que pudo haber sido un mail", "El mail que pudo haber sido un silencio", "El reply-all accidental de toda la empresa", "El archivo adjunto sin el adjunto", "El link que expiró", "La contraseña olvidada de la cuenta de 2009", "El perfil de LinkedIn con la foto de 2011", "El CV de dos páginas para un trabajo de caja", "El portfolio sin proyectos terminados", "El curso de Udemy a mitad hacer", "El tutorial de YouTube en inglés con subtítulos automáticos rotos", "La app que pide acceso a la cámara, micrófono y ubicación para ser linterna", "La actualización que rompió lo que funcionaba", "El driver que ya no es compatible", "El pendrive con fotos del 2006", "El CD-ROM de Windows 98", "La impresora que solo falla cuando algo es urgente", "El cartucho de tinta vacío", "El escáner que guarda en 3000 DPI por defecto", "El PDF que no se puede editar", "El visto ignorado por 48 horas", "El doble tilde azul sin respuesta", "El 'estoy bien' que significa lo contrario", "El 'hacé lo que quieras' que no es permiso", "El 'no pasa nada' cuando sí pasa", "El silencio incómodo en la sobremesa", "El cumpleaños olvidado sin consecuencias aparentes", "La reunión familiar con el tema prohibido", "El ex que aparece en el 'puede que conozcas'", "El perfil de Tinder que reconociste", "El match de una persona del trabajo", "El fantasmeo después de tres citas", "El 'seamos amigos' que nunca se concretó", "El like en la foto de 2019 a las 3 AM", "El storie visto tres veces sin reacción", "La historia de Instagram para alguien específico", "El indirecto en el caption de la foto", "La canción puesta para que la vea", "El subtweet que todos entendieron", "El 'pregunta a quien quieras' en el estado", "La relación abierta que nadie cerró", "El polyamor sin comunicación", "La dependencia emocional disfrazada de amor", "Los celos retroactivos", "El control del celular sin permiso", "La ubicación compartida obligatoria", "El 'dónde estás' a cada hora", "La cuenta compartida de streaming como símbolo de compromiso", "Separarse pero seguir viviendo juntos por el alquiler", "Convivir sin decidir convivir", "El casamiento por Instagram antes de decirlo a la familia", "La propuesta en el estadio que sale mal", "Un diagnóstico de cáncer por WhatsApp", "La biopsia que tardó tres semanas", "El informe médico en sobre cerrado", "La segunda opinión que confirmó la primera", "El tratamiento que no cubre ninguna obra social", "La quimioterapia en lista de espera", "La palliative care en un pasillo del hospital", "El colchón prestado en la habitación del familiar", "La factura del sanatorio de $4 millones", "La deuda médica heredada", "El accidente de tránsito sin testigos", "El seguro que no pagó", "El abogado que tardó cinco años", "La pericia que nunca llegó", "La indemnización que no alcanza para nada", "El formulario de denuncia perdido", "La guardia policial que no tomó el parte", "El vecino que no vio nada", "La cámara de seguridad apagada", "El testigo que se fue de vacaciones", "El jefe que micro-gestiona con mails de 2000 palabras", "La reunión de lunes a las 8 AM", "El team building en un bowling de Morón", "El amigo invisible de $500", "La torta de cumpleaños de alguien que no conocés", "El mail con asunto URGENTE que no es urgente", "El chat de empresa lleno de GIFs", "El feedback constructivo destructivo", "La revisión de desempeño anual que no cambia nada", "El bono que prometieron en enero", "La capacitación obligatoria de 8 horas sobre ética", "El manual de procedimientos de 200 páginas", "El organigrama desactualizado", "El proceso que nadie documentó", "La reunión sin agenda ni cierre", "El proyecto piloto que nunca escala", "El consultor externo que pregunta lo que ya sabemos", "La recomendación del consultor que ignoramos", "El roadmap de producto que cambia cada iteracion", "La deuda tecnica acumulada", "El legacy system que nadie entiende", "La migración que tardó tres años", "El bug en producción un viernes a las 5 PM", "El hotfix que generó otro bug", "El rollback que tampoco funcionó", "La base de datos sin backup", "El servidor caído el día del lanzamiento", "El proveedor que no responde el ticket", "El SLA incumplido sistemáticamente", "La escalación que llegó al CEO", "La foto del diploma en el consultorio médico", "El cuadro del gol de Maradona", "La estampita de la Difunta Correa en el taxi", "El Cristo con luces LED en el dashboard", "El peluche de San Expedito en el negocio", "La Virgen en el nicho de la escalera", "La promesa de ir a Luján caminando", "El ex voto de cera en la basílica", "La procesión del Señor del Milagro en Salta", "El milagro que no fue milagro", "La curandera del barrio que cobra en especie", "El reiki para la energía del sueldo", "El Tarot que dice que este año se acomoda todo", "La carta astral con ascendente en problemas", "La retroalimentación cósmica del universo", "El cristal de cuarzo rosa para el dinero", "La pulsera roja contra el mal de ojo", "El agua florida del vecino de arriba", "La cábala del domingo antes del clásico", "La musculosa de la suerte del equipo", "El ritual de no lavarse si gana el equipo", "La temporada de verano en Mar del Plata", "La carpa de la playa a $8000 por día", "El helado de Havanna tres veces en un día", "El paseo de los ingleses en enero", "La rotonda del torreón del monje", "La promo de hotel con desayuno sin desayuno", "El spa del hotel que estaba cerrado", "El wifi del hotel que no llega a la habitación", "La almohada que sabe a hotel", "El colchón del hospedaje de Route 40", "La cabaña en la nieve sin calefacción", "El ski que alquilaste y te quedaste grande", "El remonque que subió solo", "La picada de insecto en Iguazú", "El monito que te robó el celular en el Parque Nacional", "La selfie con el capibara", "El yacaré a dos metros en el camping", "La víbora coral en el zapato", "El escorpión bajo la almohada del hostel", "El turista que no puso repelente en el Delta", "El vapor del bañado en Corrientes a las 2 PM", "La siesta obligatoria del noreste argentino", "El calor seco de La Rioja en enero", "El viento de Comodoro Rivadavia que te lleva", "El frío de Ushuaia que no esperabas", "La nieve de agosto en Mendoza", "El granizo de Buenos Aires en noviembre", "La inundación del AMBA cada vez que llueve", "El barrio que se inunda siempre", "El bombero voluntario que también es el intendente", "La defensa civil sin recursos", "La brigada anti incendios con manguera rota", "El helicóptero de rescate que llegó tarde", "Una denuncia por falso testimonio", "El acuerdo extrajudicial secreto", "La cláusula de confidencialidad impagable", "El NDA que nadie firmó pero todos respetan", "El abogado que trabaja en porcentaje del juicio", "La mediación obligatoria sin mediador", "El conciliador que falta a la audiencia", "El perito de parte contradictorio", "La prueba pericial cuestionada", "El informe socioambiental desfavorable", "La evaluación psicológica inapelable", "El equipo técnico del juzgado de familia", "La cuota alimentaria de $15.000 en 2024", "El régimen de visitas incumplido", "La tenencia compartida sin hablar", "El divorcio express de diez años", "La división de bienes en excel", "La casa conyugal bloqueada", "El préstamo entre familiares sin papeles", "La deuda informal que destruyó la amistad", "El negocio entre hermanos que terminó en juicio", "La sociedad de hecho", "El socio que se fue con la mitad de los clientes", "La competencia desleal del ex empleado", "La franquicia que no funcionó", "El local a estrenar que nunca abrió", "El fondo de comercio sobrevalorado", "La transferencia del fondo de comercio sin papeles", "El alquiler comercial con cláusula de rescisión imposible", "El desalojo que tardó dos años", "La intimación de pago que llegó después del juicio", "La ejecución hipotecaria a precio vil", "El remate judicial con un solo postor", "La subasta online trucada", "El martillero cómplice", "La tasación a la baja intencionalmente", "El certificado de dominio con inhibición", "La hipoteca no inscripta", "El gravamen oculto en la escritura", "El usufructo del abuelo que nadie sabía", "La prehorizontalidad incumplida", "El desarrollista fallido", "El consorcio deudor de expensas desde 2019", "El fondo de reserva inexistente", "El administrador de consorcio acusado de robo", "La asamblea sin quórum permanente", "El libro de actas del consorcio perdido", "La obra en el edificio que duró cinco años", "El andamio que cayó solo", "La claraboya que gotea desde la inauguración", "El tanque de agua sin limpiar desde 2007", "El cañón del tanque que revienta en invierno", "La pileta del edificio sin habilitación", "El parril del fondo clausurado", "El SUM reservado para siempre por el mismo vecino", "El bicicletero tomado por las motos", "El cochera usurpada hace diez años", "La baulera sin cerradura", "El palier tapizado con alfombra de 1978", "El portero que mira pero no ve", "El encargado de guardia que nunca está", "La empresa de seguridad que manda jovencitos", "El botón de pánico conectado a nada", "La alarma que suena sola a las 4 AM", "La cámara de seguridad con la lente tapada", "El espejo del ascensor sin espejo", "El espejo del ascensor con rayones", "El espejo que no tiene el ángulo correcto", "El intercomunicador analógico de 1990", "El extintor descargado", "La manga de incendio anudada", "La escalera de emergencia bloqueada con cajas", "La salida de emergencia que da a otro departamento", "El cartel de 'salida' iluminado sin luz", "La llave maestra que copió el portero anterior", "El ñoqui que cobra pero no viene", "El planero con auto nuevo", "El puntero político con bolsones", "El militante con celular del estado", "El asesor con 4 asesores", "El contratado que contrató contratados", "El consultor del consultor", "El asesor de imagen del asesor de imagen", "El vocero que necesita vocero", "El protocolo del protocolo", "El decreto reglamentario del decreto", "La resolución de la resolución anterior", "La circular aclaratoria de la circular", "El addendum del addendum", "La enmienda a la enmienda", "La prórroga de la prórroga", "La extensión de la extensión del plazo", "El vencimiento prorrogado", "La fecha límite que no es límite", "El plazo improrrogable que se prorroga", "El final libre con dos parciales previos reprobados", "La correlativa que bloquea todas las otras materias", "El profesor que toma el final igual que el parcial", "El preparatorio que duró más que la carrera", "La beca que cubrió dos materias y se acabó", "El colega que aprobó sin ir a ninguna clase", "La fotocopia de la fotocopia de 1998 ilegible", "El libro de texto que cuesta el 40% del sueldo mínimo", "La bibliografía que está agotada en todas las librerías", "El apunte de 300 páginas para una materia cuatrimestral", "La materia que da el mismo profesor desde 1989", "El JTP que sabe más que el titular", "El adscripto que trabaja gratis hace cinco años", "El ayudante de primera que nunca fue a primera", "El posdoctorado de 40 años que cobra $80.000", "La carrera de posgrado que financia el exterior", "La fuga de cerebros del CONICET", "El investigador CONICET que emigró a Alemania", "El doctor en física que hace delivery en España", "El ingeniero argentino que diseña cohetes en la NASA", "Declarar menos de lo que facturás", "Pagar en efectivo para no pagar IVA", "El regalito al inspector para que mire para otro lado", "Estacionar en doble fila dos minutos que son veinte", "Sacar el celu mientras manejás por la autopista", "No usar el cinturón atrás porque 'son dos cuadras'", "Cruzar en rojo a las 3 AM porque 'no viene nadie'", "Tirar el papelito por la ventana del auto", "Tirar basura en el zanjón el día de lluvia", "Prender fuego el pasto seco en la vereda", "Regar las plantas en plena restricción hídrica", "Llenar la pileta con agua de red en verano", "Cortar el árbol sin permiso municipal", "Hacer obra sin plano aprobado", "Ampliar el departamento sin declarar", "Alquilar el inmueble sin contrato ni garantía formal", "Subregalar la propiedad a un familiar", "Pasar la propiedad a nombre de la empresa para no pagar bienes personales", "Tener la empresa a nombre de la señora que 'no trabaja'", "Declarar el auto como bien de la empresa", "El puto paredón del club que tapa el sol", "El semáforo de la Panamericana que dura 4 minutos", "La 9 de Julio a las 8 PM un lunes", "El túnel de la AU 25 de Mayo inundado", "El cruce de la General Paz en hora pico", "La obra de la autopista que dura quince años", "El puente de la 12 cerrado por niebla", "El acceso al aeropuerto de Ezeiza en obras", "El Aeropuerto de Ezeiza sin trolleys disponibles", "El cambio de moneda del aeropuerto al 60% del blue", "El taxi en el aeropuerto que no usa el taxímetro", "El remís no habilitado del aeropuerto", "La cola de migración de dos horas para nacionales", "El dj de los vuelos de Aerolíneas que pone cumbia al aterrizar", "El aplauso al piloto cuando aterriza", "El aplauso cuando llega el colectivo tarde", "El aplauso cuando el edificio del PAMI atiende", "El aplauso irónico del argentino insatisfecho", "La queja coordinada de los pasajeros del vagón", "La solidaridad del subte a las 8 AM", "El 'en mi época se laburaba de verdad'", "El 'antes no había tanta vuelta'", "El 'yo con 25 años ya tenía casa'", "El 'se ganaba menos pero alcanzaba'", "El 'ahora todos son sensibles'", "El 'antes los chicos tenían respeto'", "El 'en mi tiempo no había depresión'", "El 'la tristeza se cura con trabajo'", "El 'ansiedad es lo que se cura yendo a misa'", "El 'en mi época se casaban y punto'", "El 'para qué tanto psicólogo'", "El 'el problema es el teléfono'", "El 'la pantalla les quemó el cerebro'", "El 'con hambre no se duerme pero con celular sí'", "El 'yo a tu edad ya trabajaba'", "El 'estos jóvenes no quieren laburar'", "El 'no saben lo que es el sacrificio'", "El 'se lo dieron todo servido'", "El 'nosotros construimos lo que ellos destrozan'", "El 'si votaron esto ahora aguanten'", "Un mate con leche y facturas de manteca a las 6 AM", "La birome que no escribe cuando más la necesitás", "El post-it que se cae justo cuando lo pusiste", "La memoria USB que el sistema no reconoce", "El cable USB que no entra si no lo girás tres veces", "El cargador que funciona en ciertos ángulos", "La notebook que se calienta sobre las piernas", "El ventilador que hace ruido desde el principio del verano", "El aire acondicionado que deja de enfriar en el pico de calor", "La estufa que huele a quemado los primeros días", "El calefón que da agua tibia solo en invierno", "La ducha que oscila entre el Ártico y el sol", "El jabón que resbala justo en el momento más inoportuno", "La toalla húmeda que nunca se seca del todo", "El cepillo de dientes que se desfleca a los dos meses", "La pasta dental que siempre se termina antes", "El rollo de papel higiénico puesto al revés", "La bolsa de basura que se rompe exactamente al llegar al contenedor", "El contenedor lleno y el bolsón reventado a tu lado", "El cartón de leche que salpica si no lo abrís bien", "La fiesta clandestina durante la cuarentena", "El barbijo puesto en el mentón", "El barbijo puesto debajo de la nariz", "El escudo de la careta facial empañada", "El alcohol en gel evaporado el primer día", "El hisopado positivo el lunes antes de las vacaciones", "El aislamiento preventivo en el único baño de la casa", "La videoconferencia con el gato encima", "El hijo que cruza el cuadro de la reunión laboral", "El perro que ladra justo en la parte importante", "El vecino que taladra durante toda la reunión", "La conexión que se corta cuando hablás vos", "El eco del micrófono de alguien que no sabe silenciarlo", "El fondo virtual de playa en diciembre", "La reunión en pijama de cintura para arriba", "No poder pagar el Netflix pero tenerlo igual", "El plan familiar de streaming que todos usan mal", "El canal de YouTube que no actualizó hace dos años", "El podcast que empezaste y dejaste en el episodio 3", "El libro que arrancaste y abandonaste en la página 50", "El gympass que usaste tres semanas en enero", "La ropa de running que nunca salió del placard", "Los pesos de la billetera virtual que se devalúan solos", "El cashback que juntaste y nunca usaste", "Los puntos de la tarjeta que caducaron antes de canjear", "Los kilómetros de aerolíneas que ya no existen", "El voucher del hotel que venció en pandemia", "La entrada para el show que se canceló dos veces", "La reserva del restaurante que no apareció en el sistema", "El turno en la barbería que se confirmó y canceló", "El country del GBA sin escritura", "El barrio cerrado con la barrera rota", "El PH de Boedo con el patio más hermoso", "El departamento de Villa Crespo sin ventilación", "El monoambiente de Palermo a $2000 dólares", "El loft de San Telmo con humedad artística", "La casona de Caballito dividida en cuatro departamentos", "El 4 ambientes de Flores con pared de durlock", "El duplex de Belgrano con deuda de expensas", "El penthouse de Recoleta con goteras", "La casa quinta de Moreno sin escritura desde 1962", "El terreno baldío de Lanús en disputa judicial", "La manzana de villas en Soldati sin servicios", "El asentamiento informal con escritura comunitaria", "El loteo irregular del conurbano profundo", "La evaluación 360 donde todos mienten", "El plan de carrera que nunca se ejecutó", "El mentoring con alguien que no sabe nada", "El onboarding de tres días en PowerPoint", "La cultura de empresa con metegol y pizza", "El after office obligatorio con bebida incluida", "El team day con paintball que nadie quería", "La encuesta de clima organizacional anónima", "El resultado de la encuesta que nadie vio", "El comité de diversidad sin diversidad real", "El área de bienestar con clases de yoga a las 7 AM", "La hora flexible que no es tan flexible", "El home office que es 10 horas en vez de 8", "La guardia pasiva que te llaman igual", "El adicional de función que sacaron con la función", "La reducción de beneficios como mejora de procesos", "El recorte de viáticos como gestión eficiente", "El achicamiento de estructura como transformación ágil", "La reestructuración que significa despidos", "La desvinculación como oportunidad de crecimiento personal", "El 'no soy racista pero...'", "El 'con todo respeto...' que no respeta nada", "El 'siendo sincero...' antes de ser cruel", "El 'te lo digo por tu bien...'", "El 'no es lo que parece...' que es exactamente lo que parece", "El 'no me malinterpretes...' dicho para ser malinterpretado", "El 'no te lo tomes a mal...' para que te lo tomes mal", "El 'es solo mi opinión...' repetido veinte veces", "El 'pero hay que admitir que...' antes del pero verdadero", "El 'no estoy diciendo que...' seguido de exactamente eso", "El 'pensá lo que quieras...' dicho con cara de ofendido", "El 'hacé lo que quieras...' con tono de amenaza", "El 'no importa...' que sí importa mucho", "El 'ya fue...' que no fue para nada", "El 'dejalo...' que no lo deja", "El 'para mí está todo bien...' que no está nada bien", "El 'no pasa nada...' cuando claramente pasa algo", "El 'después hablamos...' que es para siempre", "El 'en algún momento...' que no tiene momento", "El 'capaz...' que significa definitivamente no", "El hostel de Bariloche que huele a ropa mojada", "El refugio de montaña sin baño en el Aconcagua", "La carpa de camping que se inunda con lluvia fina", "El sleeping que no abrigó en Patagonia", "El mapa de trekking desactualizado", "El GPS sin señal en el parque nacional", "El guía de turismo que se perdió", "El micro de larga distancia con el aire a tope en invierno", "La butaca del micro que no reclinaba", "La persona de al lado en el micro de 20 horas", "La escala de dos horas que se convirtió en ocho", "El vuelo cancelado sin alternativa inmediata", "La valija perdida en Ezeiza que apareció en Córdoba", "El seguro de viaje que no cubría eso", "El cambio de divisa en el aeropuerto de Cancún", "Leer el horóscopo y tomarlo en serio", "Creer en el feng shui pero solo un poco", "Hablar con las plantas cuando nadie mira", "Pedirle al universo por un lugar para estacionar", "Hacerle promesas a San Expedito y cumplirlas", "Cruzar los dedos en el quirófano", "Tocar madera tres veces", "Tirar sal por encima del hombro izquierdo", "No pasar por debajo de una escalera", "Buscar los síntomas en Google y tener todo", "Autodiagnosticarse con el DSM-V de PDF", "Tomar antibióticos sin receta porque 'eso cura'", "Guardar los antibióticos para la próxima vez", "Mezclar el ibuprofeno con el paracetamol sin saber para qué", "Ir al naturista antes que al médico", "Tomar la tisana de la abuela para cualquier cosa", "El agua con miel y limón como antiviral", "La vitamina C en megadosis preventiva", "El probiótico para la ansiedad", "El colágeno hidrolizado para todo", "El crossfit que destruyó la rodilla", "La faja lumbar de uso permanente", "El kinesiólogo que va cuatro veces por semana", "La fisioterapia de $15.000 que no cubre nada", "El traumatólogo que dijo que hay que operar", "La segunda opinión que dijo que no hay que operar", "La tercera opinión que dijo 'habría que ver'", "La resonancia que tardó tres meses", "El turno de ortopedia para diciembre de 2025", "El yeso que se mojó en la ducha el primer día", "La muleta que te lastimó más que la lesión", "La bota ortopédica en pleno verano porteño", "El vendaje neuromuscular multicolor puesto por YouTube", "El ultrasonido terapéutico sin efecto comprobado", "La infiltración de cortisona que duró un mes", "La paloma en el techo que hace ruido imposible", "El gato del pasillo que vive mejor que vos", "El perro del vecino que ladra exactamente cuando dormís", "La cotorra de la señora del 2°A que sabe tu nombre", "El canario que no para nunca", "El acuario que necesita más mantenimiento que un auto", "La tortuga que vive desde el menemismo", "El hámster que escapa a las 3 AM", "El conejillo de indias al que nadie quería pero todos lloraron", "El pez de colores que duró diez años contra todo pronóstico", "La planta de albahaca que no sobrevivió ni una semana", "El cactus que murió de sequía", "El cactus que murió de exceso de riego", "El suculento que revivió tres veces", "El potus inmortal del baño", "La planta de tomates en el balcón que dio dos tomates", "El rosal que da espinas pero no rosas", "El limonero sin limones", "La higuera que da higos solo en años impares", "El árbol de mango en Buenos Aires como acto de fe", "El boliche que abre a la 1 AM pero nadie entra antes de las 3", "La fila del boliche donde hace 4 grados", "La lista que dijeron que te ponían pero no aparecés", "El portero que te evalúa de arriba abajo", "La entrada que costó el sueldo de un día", "El guardarropa que cierra antes que vos te vayas", "El vaso de trago que costó $5000", "El shot de vodka con marca desconocida", "El karaoke que nadie quería pero todos disfrutaron", "La canción del momento que todos odian pero todos saben", "El DJ que repite el mismo set desde 2019", "La pista de baile pegajosa a las 5 AM", "El after en una casa de desconocidos", "El desayuno de empanadas después de bailar toda la noche", "La vuelta a casa en remís con desconocidos", "El domingo perdido por el sábado a la noche", "El martes difícil por el lunes feriado", "El miércoles que parece lunes", "El viernes que parece que nunca llega", "El puente del 20 de junio metido en martes", "El parrillero que dice que la carne 'ya va'", "El chimichurri industrializado que hace de cuenta que es casero", "El salame 'artesanal' de un hipermercado", "El queso de máquina envasado al vacío desde hace seis meses", "La mozzarella que largó agua en la pizza", "La pizza alta que se pincha y se desinfla", "La pizza de molde que se quemó abajo", "El fainá que llegó frío", "La empanada de atún que nadie eligió pero alguien pidió", "El locro de julio en Palermo con microverdes encima", "El carbonara sin panceta porque hay que respetar la receta", "El risotto cremoso sin cremosidad", "El sushi de delivery con arroz frío", "El wok de verduras sin sabor", "La hamburguesa gourmet de $3500 que se deshace", "La carta del restaurante con QR que no carga", "El comensal vegano que pidió en un restaurante de carnes", "El vegano que come queso 'porque es vegetariano'", "El vegetariano estricto en Navidad con toda la familia", "La dieta keto explicada en el asado familiar", "El argentino que viajó a Europa y no para de compararla", "El emigrado que opina de política argentina desde Barcelona", "El que se fue y dice que allá sí funciona todo", "El que volvió y extraña los precios de afuera", "El que fue a vivir a Miami y solo habla en inglés", "El descendiente de italianos que tramitó la ciudadanía para irse", "El que se fue a España y trabaja en hostelería", "El que emigró a Canadá y hace -30 pero 'vale la pena'", "El que fue a Israel y volvió hablando de geopolítica", "El que estudió en Francia y ahora desprecia el café argentino", "El erasmus que duró seis meses pero fue transformador para siempre", "El voluntariado en África que mencionan en cada reunión", "El viaje en mochila que se convirtió en el único tema de conversación", "El retiro espiritual en India que lo cambió todo", "El ayuno de cinco días en el desierto como despertar", "El grupo de Telegram del sindicato con audios de 10 minutos", "La planilla de excel compartida que nadie actualiza", "El formulario en papel en pleno 2024", "El fax que todavía usan en el juzgado", "La impresora matricial que sigue funcionando", "El diskette de 3 pulgadas con el backup", "El Windows XP del sistema de turnos del hospital", "El IE6 requerido por el sistema estatal", "La patente del auto en una carpeta de documentos digitales sin abrir", "El escaneo del DNI en 72 DPI borroso", "La firma digital que no reconocen en ventanilla", "El certificado digital vencido del trámite online", "La clave fiscal bloqueada por inactividad", "El CUIT inexistente en la base de datos", "El CBU de nueve cifras escrito a mano ilegible", "La cuenta corriente embargada por la AFIP", "El cheque rechazado por firma disconforme", "El recibo de sueldo impreso en papel térmico que se borra", "La liquidación final calculada en 1994", "El telegrama de despido sin causa recibido el 24 de diciembre", "La desvinculación por mensaje de texto", "El finiquito firmado sin leer", "La carta documento enviada a la dirección equivocada", "El intimación fehaciente archivada sin responder", "La mediación laboral sin mediador presente", "El sindicato que cobra la cuota y no aparece", "La huelga de celo en el registro civil", "El paro sorpresa del día del trámite importante", "La asamblea informativa que duró cinco horas", "El delegado gremial que trabaja menos que nadie", "El convenio colectivo de 1975 todavía vigente", "La escala salarial que no contempla tu categoría", "El régimen de horas extra que conviene no pedir", "La guardia de doce horas en el hospital público", "El médico residente de tercer año que no durmió", "La guardia de pediatría un sábado de lluvia", "El turno vespertino en urgencias el 31 de diciembre", "La terapia intensiva con tres camas para diez pacientes", "El insumo que pidieron hace seis meses y llegó hoy", "La respirador prestado del hospital vecino", "La farmacia del hospital con tres medicamentos disponibles", "La receta que el sistema no imprime", "El profesional que atiende seis especialidades por falta de médicos", "La guardia de salud mental un lunes lluvioso", "El psiquiatra de guardia que receta lo mismo para todo", "La derivación al hospital de mayor complejidad que queda a 80km", "La ambulancia de traslado que no tiene monitor", "El helicóptero sanitario reservado solo para la capital", "La telemedicina con señal de dos barras", "El turno de cardiología para noviembre del año que viene", "La lista de espera del trasplante que no avanza", "El órgano disponible que no llegó a tiempo", "La familia que no autorizó la donación", "El formulario de consentimiento informado de veinte páginas", "La firma del paciente con el suero puesto", "El alta prematura por falta de camas", "El paciente que vuelve a urgencias tres días después", "La infección intrahospitalaria que nadie reporta", "El error de medicación que se archivó en silencio", "La demanda por mala praxis que tardó diez años", "El seguro de mala praxis que no alcanza", "El médico que evita ciertos procedimientos por miedo a demandas", "La judicialización de la medicina argentina", "El amparo para conseguir el medicamento de alto costo", "La obra social que rechaza el tratamiento experimental", "El prepaga que aumenta la cuota cada tres meses", "El tope de reintegro que no cubre nada", "La cartilla médica desactualizada", "El médico de cabecera que no conoce al paciente", "La derivación al especialista que no tiene turno", "El sistema de salud que funciona para el que puede pagar", "La medicina privada que se volvió imposible", "El consultorio particular a $25.000 la consulta", "El análisis clínico particular que vale más que el sueldo", "La resonancia en el privado que sale lo mismo que el alquiler", "La cirugía estética financiada en 48 cuotas", "El lifting facial que quedó asimétrico", "El relleno de labios que se fue de lado", "La liposucción que no fue lo que esperaba", "Las prótesis mamarias del modelo más barato", "El piercing en el cartílago que se infectó", "El tatuaje mal hecho que hay que tapar con otro tatuaje", "La tinta de tatuaje alérgica descubierta tarde"];
+
+// ============================================================
+// STATE
+// ============================================================
+let roomRef = null;
+let myId = null;
+let myName = null;
+let roomCode = null;
+let isHost = false;
+let gameState = null;
+let myHand = [];
+let selectedCard = null;
+let unsubscribeGame = null;
+let nextRoundTimer = null;
+
+// ============================================================
+// UTILS
+// ============================================================
+function genCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for(let i=0;i<5;i++) code += chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+function genId() { return Math.random().toString(36).substr(2,9); }
+function shuffle(arr) {
+  for(let i=arr.length-1;i>0;i--) {
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ============================================================
+// SCREENS & NOTIF
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function showNotif(msg, duration=3000) {
+  const old = document.querySelector('.notif');
+  if(old) old.remove();
+  const n = document.createElement('div');
+  n.className = 'notif';
+  n.textContent = msg;
+  document.body.appendChild(n);
+  setTimeout(() => n.remove(), duration);
+}
+
+// ============================================================
+// FIREBASE READ / WRITE
+// ============================================================
+function roomPath(code) { return db.ref('rooms/' + code); }
+
+async function readRoom(code) {
+  const snap = await db.ref('rooms/' + code).once('value');
+  return snap.val();
+}
+
+function writeRoom(code, data) {
+  return db.ref('rooms/' + code).set(data);
+}
+
+function updateRoom(code, updates) {
+  return db.ref('rooms/' + code).update(updates);
+}
+
+// ============================================================
+// SUBSCRIBE — Firebase listener en tiempo real
+// ============================================================
+function subscribeToRoom() {
+  if(unsubscribeGame) { unsubscribeGame(); unsubscribeGame = null; }
+
+  const ref = db.ref('rooms/' + roomCode);
+  const handler = ref.on('value', snap => {
+    const room = snap.val();
+    if(!room) return;
+    onRoomUpdate(room);
+  });
+
+  unsubscribeGame = () => ref.off('value', handler);
+}
+
+// ============================================================
+// CREATE ROOM
+// ============================================================
+async function createRoom() {
+  const name = document.getElementById('nameInput').value.trim();
+  if(!name) { document.getElementById('homeError').textContent = 'Poné tu nombre primero'; return; }
+
+  myName = name;
+  myId = genId();
+  roomCode = genCode();
+  isHost = true;
+
+  const roomData = {
+    host: myId,
+    phase: 'lobby',
+    players: { [myId]: { name, id: myId, score: 0 } },
+    round: 0,
+    pointsToWin: 7,
+    created: Date.now()
+  };
+
+  await writeRoom(roomCode, roomData);
+
+  document.getElementById('lobbyCode').textContent = roomCode;
+  document.getElementById('lobbyHostControls').style.display = '';
+  document.getElementById('lobbyWaiting').style.display = 'none';
+
+  subscribeToRoom();
+  showScreen('lobby');
+}
+
+// ============================================================
+// JOIN ROOM
+// ============================================================
+async function joinRoom() {
+  const name = document.getElementById('nameInput').value.trim();
+  const code = document.getElementById('codeInput').value.trim().toUpperCase();
+  if(!name) { document.getElementById('homeError').textContent = 'Poné tu nombre primero'; return; }
+  if(!code) { document.getElementById('homeError').textContent = 'Ingresá el código de sala'; return; }
+
+  document.getElementById('homeError').textContent = 'Buscando sala...';
+
+  const room = await readRoom(code);
+  if(!room) { document.getElementById('homeError').textContent = 'Sala no encontrada. Verificá el código.'; return; }
+  if(room.phase !== 'lobby') { document.getElementById('homeError').textContent = 'La partida ya empezó.'; return; }
+
+  myName = name;
+  myId = genId();
+  roomCode = code;
+  isHost = false;
+
+  await db.ref('rooms/' + code + '/players/' + myId).set({ name, id: myId, score: 0 });
+
+  document.getElementById('homeError').textContent = '';
+  document.getElementById('lobbyCode').textContent = roomCode;
+  document.getElementById('lobbyHostControls').style.display = 'none';
+  document.getElementById('lobbyWaiting').style.display = '';
+
+  subscribeToRoom();
+  showScreen('lobby');
+}
+
+// ============================================================
+// ON ROOM UPDATE
+// ============================================================
+function onRoomUpdate(room) {
+  gameState = room;
+
+  if(room.phase === 'lobby') {
+    if(!document.getElementById('lobby').classList.contains('active')) showScreen('lobby');
+    updateLobbyUI(room);
+  } else if(room.phase === 'playing') {
+    if(!document.getElementById('game').classList.contains('active')) showScreen('game');
+    updateGameUI(room);
+  } else if(room.phase === 'gameover') {
+    if(!document.getElementById('game').classList.contains('active')) showScreen('game');
+    showGameOver(room);
+  }
+}
+
+// ============================================================
+// LOBBY UI
+// ============================================================
+function updateLobbyUI(room) {
+  const players = Object.values(room.players || {});
+  document.getElementById('playerCount').textContent = players.length;
+
+  const list = document.getElementById('playersList');
+  list.innerHTML = players.map(p => `
+    <div class="player-chip ${p.id === room.host ? 'host' : ''}">
+      <div class="dot"></div>
+      <span style="font-size:13px">${escHtml(p.name)}</span>
+      ${p.id === room.host ? '<span class="badge">HOST</span>' : ''}
+    </div>
+  `).join('');
+
+  if(isHost) {
+    const startBtn = document.getElementById('startBtn');
+    startBtn.disabled = players.length < 2;
+    document.getElementById('lobbyError').textContent = players.length < 2 ? 'Necesitás al menos 2 jugadores' : '';
+  }
+}
+
+// ============================================================
+// START GAME
+// ============================================================
+async function startGame() {
+  const room = await readRoom(roomCode);
+  const players = Object.values(room.players || {});
+  if(players.length < 2) return;
+
+  const pointsToWin = parseInt(document.getElementById('pointsToWin').value) || 7;
+
+  const shuffledWhite = shuffle([...WHITE_CARDS]);
+  const shuffledBlack = shuffle([...BLACK_CARDS]);
+  const hands = {};
+  let cardIdx = 0;
+  players.forEach(p => {
+    hands[p.id] = shuffledWhite.slice(cardIdx, cardIdx+10);
+    cardIdx += 10;
+  });
+
+  const zar = players[0].id;
+
+  await writeRoom(roomCode, {
+    ...room,
+    phase: 'playing',
+    pointsToWin,
+    round: 1,
+    hands,
+    deck: shuffledWhite.slice(cardIdx),
+    blackDeck: shuffledBlack.slice(1),
+    currentBlack: shuffledBlack[0],
+    zar,
+    submissions: {},
+    roundPhase: 'answering',
+    roundWinner: null
+  });
+}
+
+// ============================================================
+// GAME UI
+// ============================================================
+function updateGameUI(room) {
+  const players = Object.values(room.players || {});
+  document.getElementById('scoreBoard').innerHTML = players.map(p => `
+    <div class="score-item ${p.id === room.zar ? 'active' : ''}">
+      <span class="name">${escHtml(p.name)}${p.id===room.zar?' 👑':''}</span>
+      <span class="pts"> ${p.score || 0}pts</span>
+    </div>
+  `).join('');
+
+  document.getElementById('roundNum').textContent = room.round || 1;
+
+  const btext = room.currentBlack || '...';
+  document.getElementById('blackCardText').innerHTML = btext.replace(/_+/g, '<span class="blank">___</span>');
+
+  ['handSection','waitingSection','judgingSection','zarWaiting','winnerBanner','gameOverSection'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+
+  if(room.roundPhase === 'answering') {
+    const subs = Object.values(room.submissions || {});
+    const nonZarPlayers = players.filter(p => p.id !== room.zar);
+
+    if(myId === room.zar) {
+      document.getElementById('zarWaiting').style.display = '';
+      document.getElementById('zarSubmittedCount').textContent = `${subs.length} / ${nonZarPlayers.length} respuestas recibidas`;
+      document.getElementById('phaseBanner').innerHTML = `<span class="icon">👑</span><span>Sos el <strong>Zar</strong> — esperá las respuestas</span>`;
+    } else {
+      const mySubmission = room.submissions && room.submissions[myId];
+      if(mySubmission) {
+        document.getElementById('waitingSection').style.display = '';
+        document.getElementById('submittedCount').textContent = `${subs.length} / ${nonZarPlayers.length} respuestas enviadas`;
+        document.getElementById('phaseBanner').innerHTML = `<span class="icon">⏳</span><span>Carta enviada — esperando a los demás</span>`;
+      } else {
+        document.getElementById('handSection').style.display = '';
+        renderHand(room);
+        document.getElementById('phaseBanner').innerHTML = `<span class="icon">🃏</span><span>Elegí tu <strong>respuesta</strong></span>`;
+      }
+    }
+
+    // Host avanza a judging cuando todos enviaron
+    if(isHost && nonZarPlayers.length > 0 && subs.length === nonZarPlayers.length) {
+      if(room.roundPhase === 'answering') {
+        db.ref('rooms/' + roomCode + '/roundPhase').set('judging');
+      }
+    }
+
+  } else if(room.roundPhase === 'judging') {
+    document.getElementById('phaseBanner').innerHTML = myId === room.zar
+      ? `<span class="icon">⚖️</span><span>Sos el <strong>Zar</strong> — elegí la más graciosa</span>`
+      : `<span class="icon">👀</span><span>El <strong>Zar</strong> está eligiendo...</span>`;
+
+    if(myId === room.zar) {
+      document.getElementById('judgingSection').style.display = '';
+      renderSubmissions(room);
+    } else {
+      document.getElementById('waitingSection').style.display = '';
+      document.getElementById('submittedCount').textContent = 'El Zar está juzgando las respuestas...';
+    }
+
+  } else if(room.roundPhase === 'reveal') {
+    const wb = document.getElementById('winnerBanner');
+    wb.style.display = '';
+    const wPlayer = players.find(p => p.id === room.roundWinner);
+    document.getElementById('winnerName').textContent = wPlayer ? wPlayer.name : '?';
+    const winSub = room.submissions && room.submissions[room.roundWinner];
+    document.getElementById('winnerCard').textContent = winSub ? winSub.card : '—';
+    document.getElementById('phaseBanner').innerHTML = `<span class="icon">🏆</span><span><strong>${wPlayer ? wPlayer.name : '?'}</strong> ganó la ronda!</span>`;
+
+    // Solo el host avanza — y solo una vez
+    if(isHost && !nextRoundTimer) {
+      nextRoundTimer = setTimeout(async () => {
+        nextRoundTimer = null;
+        const r = await readRoom(roomCode);
+        if(r && r.roundPhase === 'reveal') nextRound(r);
+      }, 4000);
+    }
+  }
+}
+
+// ============================================================
+// HAND & CARDS
+// ============================================================
+function renderHand(room) {
+  const hand = (room.hands && room.hands[myId]) || [];
+  myHand = hand;
+  selectedCard = null;
+  document.getElementById('submitBtn').disabled = true;
+
+  document.getElementById('myHand').innerHTML = hand.map((card, i) => `
+    <div class="white-card" onclick="selectCard(${i})" data-idx="${i}">
+      ${escHtml(card)}
+      <div class="card-footer-w">HDP</div>
+    </div>
+  `).join('');
+}
+
+function selectCard(idx) {
+  selectedCard = idx;
+  document.querySelectorAll('.white-card').forEach((el, i) => {
+    el.classList.toggle('selected', i === idx);
+  });
+  document.getElementById('submitBtn').disabled = false;
+}
+
+async function submitCard() {
+  if(selectedCard === null) return;
+  const card = myHand[selectedCard];
+  document.getElementById('submitBtn').disabled = true;
+
+  // Read fresh state to avoid overwriting others
+  const room = await readRoom(roomCode);
+  if(!room) return;
+
+  const newHand = myHand.filter((_, i) => i !== selectedCard);
+
+  // Replenish from deck
+  const deck = room.deck || [];
+  if(deck.length > 0) newHand.push(deck[0]);
+  const newDeck = deck.length > 0 ? deck.slice(1) : [];
+
+  await db.ref('rooms/' + roomCode).update({
+    ['hands/' + myId]: newHand,
+    ['submissions/' + myId]: { card, playerId: myId },
+    deck: newDeck
+  });
+
+  showNotif('¡Carta enviada!');
+}
+
+function renderSubmissions(room) {
+  const subs = shuffle(Object.values(room.submissions || {}));
+  document.getElementById('submissionsGrid').innerHTML = subs.map(sub => `
+    <div class="submission-card" onclick="pickWinner('${sub.playerId}')">
+      ${escHtml(sub.card)}
+    </div>
+  `).join('');
+}
+
+async function pickWinner(playerId) {
+  if(myId !== gameState.zar) return;
+
+  const room = await readRoom(roomCode);
+  const newScore = (room.players[playerId].score || 0) + 1;
+  const ptw = room.pointsToWin || 7;
+  const gameOver = newScore >= ptw;
+
+  const updates = {
+    ['players/' + playerId + '/score']: newScore,
+    roundWinner: playerId,
+    roundPhase: 'reveal'
+  };
+
+  if(gameOver) {
+    updates.phase = 'gameover';
+    updates.gameWinner = playerId;
+  }
+
+  await db.ref('rooms/' + roomCode).update(updates);
+}
+
+async function nextRound(room) {
+  const players = Object.values(room.players || {});
+  const zarIdx = players.findIndex(p => p.id === room.zar);
+  const nextZar = players[(zarIdx + 1) % players.length];
+
+  let currentBlack, blackDeck;
+  if(room.blackDeck && room.blackDeck.length > 0) {
+    currentBlack = room.blackDeck[0];
+    blackDeck = room.blackDeck.slice(1);
+  } else {
+    const reshuffled = shuffle([...BLACK_CARDS]);
+    currentBlack = reshuffled[0];
+    blackDeck = reshuffled.slice(1);
+  }
+
+  await db.ref('rooms/' + roomCode).update({
+    round: (room.round || 1) + 1,
+    zar: nextZar.id,
+    submissions: {},
+    roundPhase: 'answering',
+    roundWinner: null,
+    currentBlack,
+    blackDeck
+  });
+}
+
+// ============================================================
+// GAME OVER
+// ============================================================
+function showGameOver(room) {
+  ['handSection','waitingSection','judgingSection','zarWaiting','winnerBanner'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  document.getElementById('gameOverSection').style.display = '';
+
+  const winner = room.players[room.gameWinner];
+  document.getElementById('gameWinner').textContent = winner ? winner.name : '?';
+
+  const scores = Object.values(room.players).sort((a,b) => (b.score||0)-(a.score||0));
+  document.getElementById('finalScores').innerHTML = scores.map(p =>
+    `${p.name}: ${p.score||0} puntos`
+  ).join(' &bull; ');
+}
+
+async function backToLobby() {
+  if(!isHost) return;
+  const room = await readRoom(roomCode);
+  if(!room) return;
+  const players = room.players || {};
+  Object.keys(players).forEach(k => { players[k].score = 0; });
+  await writeRoom(roomCode, { ...room, phase: 'lobby', round: 0, players });
+}
+
+// ============================================================
+// LEAVE
+// ============================================================
+async function leaveRoom() {
+  if(unsubscribeGame) { unsubscribeGame(); unsubscribeGame = null; }
+  if(nextRoundTimer) { clearTimeout(nextRoundTimer); nextRoundTimer = null; }
+
+  if(roomCode && myId) {
+    try {
+      await db.ref('rooms/' + roomCode + '/players/' + myId).remove();
+      // Si era host, pasarle el rol al siguiente
+      if(isHost) {
+        const room = await readRoom(roomCode);
+        if(room && room.players && Object.keys(room.players).length > 0) {
+          const nextHost = Object.keys(room.players)[0];
+          await db.ref('rooms/' + roomCode + '/host').set(nextHost);
+        } else {
+          // Sala vacía, borrarla
+          await db.ref('rooms/' + roomCode).remove();
+        }
+      }
+    } catch(e) {}
+  }
+
+  roomCode = null; myId = null; isHost = false; gameState = null;
+  document.getElementById('homeError').textContent = '';
+  showScreen('home');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.getElementById('codeInput').addEventListener('input', function() {
+  this.value = this.value.toUpperCase();
+});
+</script>
+
+
+// ════════════════════════════════════════════════════════════
+// ADMIN PANEL
+// ════════════════════════════════════════════════════════════
+
+// Activa admin con Ctrl+Shift+A o escribiendo "hdpadmin" en cualquier input
+let adminKeyBuffer = '';
+document.addEventListener('keydown', e => {
+  if(e.ctrlKey && e.shiftKey && e.key === 'A') { openAdmin(); return; }
+  // secret word detector
+  adminKeyBuffer += e.key.toLowerCase();
+  if(adminKeyBuffer.length > 10) adminKeyBuffer = adminKeyBuffer.slice(-10);
+  if(adminKeyBuffer.includes('hdpadmin')) { adminKeyBuffer = ''; openAdmin(); }
+});
+
+let adminAuthenticated = false;
+let adminCurrentTab = 'white';
+
+// Simple hash para no guardar la contraseña en texto plano
+async function hashPwd(pwd) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pwd));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+function openAdmin() {
+  document.getElementById('adminOverlay').classList.add('open');
+  document.getElementById('adminPwdInput').value = '';
+  document.getElementById('adminLoginErr').textContent = '';
+  if(adminAuthenticated) showAdminPanel();
+}
+
+function closeAdmin() {
+  document.getElementById('adminOverlay').classList.remove('open');
+}
+
+async function checkAdminPwd() {
+  const input = document.getElementById('adminPwdInput').value;
+  if(!input) return;
+
+  // Primera vez: si no hay contraseña guardada, la contraseña por defecto es "hdp2024"
+  const storedHash = await db.ref('admin/pwdHash').once('value').then(s => s.val());
+
+  if(!storedHash) {
+    // Primer uso: guardar hash de contraseña default y autenticar
+    const defaultHash = await hashPwd('hdp2024');
+    const inputHash = await hashPwd(input);
+    if(inputHash === defaultHash) {
+      await db.ref('admin/pwdHash').set(defaultHash);
+      adminAuthenticated = true;
+      showAdminPanel();
+    } else {
+      document.getElementById('adminLoginErr').textContent = 'Contraseña incorrecta. (Por defecto: hdp2024)';
+    }
+    return;
+  }
+
+  const inputHash = await hashPwd(input);
+  if(inputHash === storedHash) {
+    adminAuthenticated = true;
+    showAdminPanel();
+  } else {
+    document.getElementById('adminLoginErr').textContent = 'Contraseña incorrecta.';
+  }
+}
+
+function showAdminPanel() {
+  document.getElementById('adminLogin').style.display = 'none';
+  document.getElementById('adminPanel').style.display = '';
+  loadAdminCards();
+}
+
+function switchAdminTab(tab) {
+  adminCurrentTab = tab;
+  ['white','black','settings'].forEach(t => {
+    document.getElementById('adminTab' + t.charAt(0).toUpperCase() + t.slice(1)).style.display = t === tab ? '' : 'none';
+    const btn = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+    btn.classList.toggle('active', t === tab);
+  });
+  if(tab !== 'settings') loadAdminCards();
+}
+
+async function loadAdminCards() {
+  const snap = await db.ref('customCards').once('value');
+  const data = snap.val() || {};
+  const whites = Object.entries(data).filter(([k,v]) => v.type === 'white');
+  const blacks = Object.entries(data).filter(([k,v]) => v.type === 'black');
+
+  document.getElementById('whiteCount').textContent = `${whites.length} cartas blancas personalizadas`;
+  document.getElementById('blackCount').textContent = `${blacks.length} cartas negras personalizadas`;
+
+  renderAdminList('whiteList', whites, 'white');
+  renderAdminList('blackList', blacks, 'black');
+}
+
+function renderAdminList(containerId, entries, type) {
+  const el = document.getElementById(containerId);
+  if(entries.length === 0) {
+    el.innerHTML = '<div class="admin-empty">No hay cartas personalizadas todavía.<br>¡Agregá la primera!</div>';
+    return;
+  }
+  el.innerHTML = entries.map(([key, card]) => `
+    <div class="admin-card-row ${type === 'black' ? 'is-black' : ''}" id="row-${key}">
+      <textarea class="card-text-edit" id="edit-${key}" rows="2">${escHtml(card.text)}</textarea>
+      <div class="row-actions">
+        <button class="btn-save-card" onclick="saveCard('${key}')">guardar</button>
+        <button class="btn-del-card" onclick="deleteCard('${key}')">borrar</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function addCustomCard(type) {
+  const inputId = type === 'white' ? 'newWhiteText' : 'newBlackText';
+  const text = document.getElementById(inputId).value.trim();
+  if(!text) return;
+
+  const key = 'c_' + Date.now() + '_' + Math.random().toString(36).substr(2,5);
+  await db.ref('customCards/' + key).set({ type, text, created: Date.now() });
+  document.getElementById(inputId).value = '';
+  showNotif('Carta agregada ✓');
+  loadAdminCards();
+}
+
+async function saveCard(key) {
+  const text = document.getElementById('edit-' + key).value.trim();
+  if(!text) return;
+  await db.ref('customCards/' + key + '/text').set(text);
+  showNotif('Carta guardada ✓');
+}
+
+async function deleteCard(key) {
+  if(!confirm('¿Borrar esta carta?')) return;
+  await db.ref('customCards/' + key).remove();
+  document.getElementById('row-' + key)?.remove();
+  showNotif('Carta borrada');
+  loadAdminCards();
+}
+
+async function changeAdminPwd() {
+  const p1 = document.getElementById('newPwd1').value;
+  const p2 = document.getElementById('newPwd2').value;
+  const msg = document.getElementById('pwdMsg');
+  if(!p1) { msg.className='admin-msg err'; msg.textContent='Ingresá la nueva contraseña.'; return; }
+  if(p1 !== p2) { msg.className='admin-msg err'; msg.textContent='Las contraseñas no coinciden.'; return; }
+  if(p1.length < 4) { msg.className='admin-msg err'; msg.textContent='Mínimo 4 caracteres.'; return; }
+  const hash = await hashPwd(p1);
+  await db.ref('admin/pwdHash').set(hash);
+  document.getElementById('newPwd1').value = '';
+  document.getElementById('newPwd2').value = '';
+  msg.className = 'admin-msg ok';
+  msg.textContent = '✓ Contraseña actualizada correctamente.';
+  setTimeout(() => msg.textContent = '', 3000);
+}
+
+// ── Mezclar cartas custom con las originales al arrancar partida
+const _originalStartGame = startGame;
+startGame = async function() {
+  // Cargar cartas custom desde Firebase antes de repartir
+  const snap = await db.ref('customCards').once('value');
+  const data = snap.val() || {};
+  const customWhites = Object.values(data).filter(c => c.type === 'white').map(c => c.text);
+  const customBlacks = Object.values(data).filter(c => c.type === 'black').map(c => c.text);
+
+  // Inyectarlas en los mazos globales temporalmente
+  const _origWhite = WHITE_CARDS;
+  const _origBlack = BLACK_CARDS;
+  WHITE_CARDS.push(...customWhites);
+  BLACK_CARDS.push(...customBlacks);
+
+  await _originalStartGame();
+
+  // Limpiar inyección (los arrays son globales, mejor restaurar)
+  WHITE_CARDS.length = _origWhite.length;
+  BLACK_CARDS.length = _origBlack.length;
+};
+
+<script>
+if('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('SW registrado'))
+      .catch(e => console.log('SW error:', e));
+  });
+}
+</script>
+</body>
+</html>
